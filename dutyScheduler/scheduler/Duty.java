@@ -1,4 +1,4 @@
-package u4.reshall.dutyScheduler.scheduler;
+package dutyScheduler.scheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele, Amit Akula
@@ -26,8 +26,8 @@ package u4.reshall.dutyScheduler.scheduler;
  *     -My IntegerBoundException class for more descriptive error messages.
  */
 import java.util.Calendar;
-import u4.reshall.dutyScheduler.customErrors.ErrorChecker;
-import u4.reshall.dutyScheduler.customErrors.IntegerBoundException;
+import dutyScheduler.customErrors.ErrorChecker;
+import dutyScheduler.customErrors.IntegerBoundException;
 
 /**
  * A class used to represent a day on which RA Duty takes place. 

@@ -1,4 +1,4 @@
-package u4.reshall.dutyScheduler.customErrors;
+package dutyScheduler.customErrors;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -19,8 +19,8 @@ package u4.reshall.dutyScheduler.customErrors;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import u4.reshall.dutyScheduler.scheduler.RA;
-import u4.reshall.dutyScheduler.scheduler.Duty;
+import dutyScheduler.scheduler.RA;
+import dutyScheduler.scheduler.Duty;
 
 import java.io.FileWriter;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package u4.reshall.dutyScheduler.scheduler;
+package dutyScheduler.scheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -39,11 +39,11 @@ import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
-import u4.reshall.dutyScheduler.customErrors.InvalidFileContentsException;
-import u4.reshall.dutyScheduler.customErrors.PreferenceConsistencyException;
-import u4.reshall.dutyScheduler.customErrors.ImpossiblePreferencesException;
-import u4.reshall.dutyScheduler.customErrors.GreedyException;
-import u4.reshall.dutyScheduler.customErrors.ErrorChecker;
+import dutyScheduler.customErrors.InvalidFileContentsException;
+import dutyScheduler.customErrors.PreferenceConsistencyException;
+import dutyScheduler.customErrors.ImpossiblePreferencesException;
+import dutyScheduler.customErrors.GreedyException;
+import dutyScheduler.customErrors.ErrorChecker;
 
 /**
  * Main class for running the RA duty scheduling algorithm. 

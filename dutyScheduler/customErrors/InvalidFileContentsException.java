@@ -1,4 +1,4 @@
-package u4.reshall.dutyScheduler.customErrors;
+package dutyScheduler.customErrors;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele

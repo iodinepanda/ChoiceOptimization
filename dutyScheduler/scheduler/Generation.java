@@ -1,4 +1,4 @@
-package u4.reshall.dutyScheduler.scheduler;
+package dutyScheduler.scheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -34,8 +34,8 @@ import java.util.TreeSet;
 import java.util.Collections;
 import java.util.Set;
 import java.util.Collection;
-import u4.reshall.dutyScheduler.customErrors.ErrorChecker;
-import u4.reshall.dutyScheduler.customErrors.InvalidFileContentsException;
+import dutyScheduler.customErrors.ErrorChecker;
+import dutyScheduler.customErrors.InvalidFileContentsException;
 
 /**
  * A class used to represent a generation of RA Duty Schedules for use in the genetic algorithm.

@@ -1,4 +1,4 @@
-package u4.reshall.dutyScheduler.scheduler;
+package dutyScheduler.scheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -28,8 +28,8 @@ package u4.reshall.dutyScheduler.scheduler;
  */
 import java.util.HashMap;
 import java.util.HashSet;
-import u4.reshall.dutyScheduler.customErrors.ErrorChecker;
-import u4.reshall.dutyScheduler.customErrors.IntegerBoundException;
+import dutyScheduler.customErrors.ErrorChecker;
+import dutyScheduler.customErrors.IntegerBoundException;
 
 /**
  * A class representing Resident Assistants for use with my genetic scheduling algorithm.

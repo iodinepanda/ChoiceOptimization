@@ -1,4 +1,4 @@
-package u4.reshall.dutyScheduler.scheduler;
+package dutyScheduler.scheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
-import u4.reshall.dutyScheduler.customErrors.ErrorChecker;
+import dutyScheduler.customErrors.ErrorChecker;
 
 /**
  * A class for representing a schedule of RA Duties.

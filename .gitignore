@@ -1,0 +1,10 @@
+*.class
+*.sched
+*.json
+*.xlsx
+*.txt
+*.log
+*.html
+*.css
+*.js
+.DS_Store

@@ -33,39 +33,30 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.Collection;
 import choiceOptimizer.Population;
+import choiceOptimizer.Chooser;
+import choiceOptimizer.Item;
 
 /**
  * A class used to represent a generation of RA Duty Schedules for use in the genetic algorithm.
  *
  * @author Matthew Mussomele
  */
-public class Generation implements Population {
+public class Generation<C extends Chooser, I extends Item> implements Population<C, I> {
 
     TreeSet<Schedule> schedules;
-    ArrayList<RA> rList;
-    ArrayList<Duty> dList;
+    ArrayList<C> rList;
+    ArrayList<I> dList;
 
     {
         schedules = new TreeSet<Schedule>();
-        rList = new ArrayList<RA>();
-        dList = new ArrayList<Duty>();
+        rList = new ArrayList<C>();
+        dList = new ArrayList<I>();
     }
 
     /**
      * Constructs a new, empty Generation of Schedules
      */
     public Generation() {
-    }
-
-    /**
-     * Constructs a new Generation with the same Schedules as another.
-     * 
-     * @param  other The other Generation to copy
-     */
-    public Generation(Generation other) {
-        schedules = new TreeSet<Schedule>(other.schedules);
-        rList = new ArrayList<RA>(other.rList);
-        dList = new ArrayList<Duty>(other.dList);
     }
 
     /**
@@ -83,16 +74,16 @@ public class Generation implements Population {
      * @param raList The list of RA's to put in the Schedules
      * @param duties The list of Duty's to assign to the RA's
      */
-    public void seed(Collection<RA> raList, Collection<Duty> duties) {
-        rList = new ArrayList<RA>(raList);
-        dList = new ArrayList<Duty>(duties);
+    public void seed(Collection<C> raList, Collection<I> duties) {
+        rList = new ArrayList<C>(raList);
+        dList = new ArrayList<I>(duties);
         schedules.clear();
         int attempts = 0;
 
         //Generate the need number of seed Schedules
         for (int i = 0; i < Scheduler.SEED_COUNT; i += 1) {
             //get another viable Schedule
-            Schedule next = getNextSeed(rList, new ArrayList<Duty>(dList));
+            Schedule next = getNextSeed(rList, new ArrayList<I>(dList));
             if (next == null) { //if it was not a good schedule, we need to try again
                 i -= 1;
                 attempts += 1;
@@ -111,7 +102,7 @@ public class Generation implements Population {
     /*
      * Returns either a valid random scheduling or null if this iteration was impossible.
      */
-    private Schedule getNextSeed(ArrayList<RA> raList, ArrayList<Duty> duties) {
+    private Schedule getNextSeed(ArrayList<C> raList, ArrayList<I> duties) {
         Schedule.ScheduleBuilder seedBuilder = new Schedule.ScheduleBuilder(raList.size(),
                                                                             duties.size());
         Collections.shuffle(duties);
@@ -124,16 +115,16 @@ public class Generation implements Population {
                                                         +  " does not equal the total duty count.");
                 }
                 doneCount = 0;
-                for (RA ra : raList) { //loop through the RAs, assigning duties one by one
-                    if (seedBuilder.doneAssigning(ra)) {
+                for (C ra : raList) { //loop through the RAs, assigning duties one by one
+                    if (seedBuilder.doneAssigning((RA) ra)) {
                         doneCount += 1;
                         continue;
                     } else {
-                        Duty firstEligible = getFirstEligible(ra, duties);
+                        I firstEligible = getFirstEligible(ra, duties);
                         if (firstEligible == null) { 
                             return null; //no elligible duties left means invalid schedule
                         } else {
-                            seedBuilder.putAssignment(ra, firstEligible);
+                            seedBuilder.putAssignment((RA) ra, (Duty) firstEligible);
                             duties.remove(firstEligible);
                         }
                     }
@@ -146,8 +137,8 @@ public class Generation implements Population {
         return null;
     }
 
-    private Duty getFirstEligible(RA ra, ArrayList<Duty> duties) {
-        for (Duty duty : duties) {
+    private I getFirstEligible(C ra, ArrayList<I> duties) {
+        for (I duty : duties) {
             if (ra.eligibleItem(duty) || Scheduler.ALLOW_ILLEGALS) {
                 return duty;
             }
@@ -198,7 +189,7 @@ public class Generation implements Population {
         for (Schedule s : schedules) {         
             Schedule next = (Schedule) s.mutate();
             while (next == null || schedules.contains(next) || babySchedules.contains(next)) {
-                next = getNextSeed(rList, new ArrayList<Duty>(dList));
+                next = getNextSeed(rList, new ArrayList<I>(dList));
             }
             babySchedules.add(next);
         }

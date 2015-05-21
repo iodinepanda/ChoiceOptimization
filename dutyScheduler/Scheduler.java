@@ -257,9 +257,9 @@ public class Scheduler {
     private static Schedule run() {
         Schedule best = null;
         Schedule localBest = null;
-        Generation thisGen = null;
+        Generation<RA, Duty> thisGen = null;
         for (int i = 0; i < NUM_RUNS; i += 1) {
-            thisGen = new Generation();
+            thisGen = new Generation<RA, Duty>();
             thisGen.seed(raList, dutyList);
             localBest = thisGen.evolve();
             if (best == null || localBest.getCost() < best.getCost()) {

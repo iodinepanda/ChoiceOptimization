@@ -19,13 +19,13 @@ package choiceOptimizer;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface Chooser {
+public interface Chooser {
 
-    public boolean eligibleItem(Item item);
-    public int itemWeight(Item item);
+    boolean eligibleItem(Item item);
+    int itemWeight(Item item);
 
-    @Override public String toString();
-    @Override public boolean equals(Object other);
-    @Override public int hashCode();
+    @Override String toString();
+    @Override boolean equals(Object other);
+    @Override int hashCode();
 
 }

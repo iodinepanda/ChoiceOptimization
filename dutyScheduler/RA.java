@@ -1,4 +1,4 @@
-package dutyScheduler.scheduler;
+package dutyScheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -24,12 +24,11 @@ package dutyScheduler.scheduler;
  *     -Java's built in HashMap class for quick accessing of duty preference values.
  *     -Java's built in HashSet class for quick lookup of duty eligibility.
  *     -My static ErrorChecker class for data validation and reporting
- *     -My IntegerBoundException class for more descriptive error reporting.
  */
 import java.util.HashMap;
 import java.util.HashSet;
-import dutyScheduler.customErrors.ErrorChecker;
-import dutyScheduler.customErrors.IntegerBoundException;
+import choiceOptimizer.AbstractChooser;
+import choiceOptimizer.Item;
 
 /**
  * A class representing Resident Assistants for use with my genetic scheduling algorithm.
@@ -38,14 +37,9 @@ import dutyScheduler.customErrors.IntegerBoundException;
  * @author Matthew Mussomele
  */
 
-public class RA {
+public class RA extends AbstractChooser {
         
-    private static final int ILLEGAL_DUTY = Integer.MAX_VALUE;
-
-    private HashMap<Duty, Integer> preferences;
-    private String name;
     private int dutiesToAssign;
-    private HashSet<Duty> invalidDuties;
 
     /**
      * A private constructor for the RA class. This is private to enforce usage of the RABuilder
@@ -54,30 +48,10 @@ public class RA {
      * @param  builder An RABuilder instance that this RA is constructed from
      */
     private RA(RABuilder builder) {
-        preferences = new HashMap<Duty, Integer>(builder.prefs);
+        preferences = new HashMap<Item, Integer>(builder.prefs);
         name = builder.n;
         dutiesToAssign = builder.dta;
-        invalidDuties = new HashSet<Duty>(builder.iD);
-    }
-
-    /**
-     * Evaluates whether the given duty is a valid assignment.
-     * 
-     * @param  duty A Duty object to check the validity of
-     * @return      true if this RA instance can cover this duty, false otherwise
-     */
-    public boolean eligibleDuty(Duty duty) {
-        return !invalidDuties.contains(duty);
-    }
-
-    /**
-     * Gets the preference value of a duty relative to this RA instance
-     * 
-     * @param  duty A Duty object to get the preference of
-     * @return The weight of duty in this RA instance's preferences. Lower values are more prefered.
-     */
-    public int dutyWeight(Duty duty) {  
-        return (preferences.containsKey(duty)) ? preferences.get(duty) : ILLEGAL_DUTY;
+        invalidItems = new HashSet<Item>(builder.iD);
     }
 
     /**
@@ -90,49 +64,15 @@ public class RA {
     }
 
     /**
-     * Returns a string representation of this RA object
-     * 
-     * @return The name of the RA represented by this instance
-     */
-    @Override
-    public String toString() {
-        return name;
-    } 
-
-    /**
-     * Compares this to another Object for equivalency.
-     * 
-     * @param  other The other Object to be compared against.
-     * @return true if the the other Object is an RA and if it has the same name, false otherwise
-     */
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof RA) {
-            return name.equals(((RA) other).toString());
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Gets an integer representation of this RA for hashing.
-     * @return the hashCode() of the name of the RA represented by this instance
-     */
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    /**
      * A static builder class to allow RA instances to be immutable.
      */
     public static class RABuilder {
 
-        private HashMap<Duty, Integer> prefs;
+        private HashMap<Item, Integer> prefs;
         private String n;
         private int tD;
         private int dta;
-        private HashSet<Duty> iD;
+        private HashSet<Item> iD;
 
         /**
          * Creates a new RABuilder.
@@ -142,8 +82,8 @@ public class RA {
          * @param  dutiesToAssign The number of duties the to-be constructed RA should be given.
          */     
         public RABuilder(String name, int totalDuties, int dutiesToAssign) {
-            this.prefs = new HashMap<Duty, Integer>(totalDuties);
-            this.iD = new HashSet<Duty>(totalDuties);
+            this.prefs = new HashMap<Item, Integer>(totalDuties);
+            this.iD = new HashSet<Item>(totalDuties);
 
             this.n = name;
             this.tD = totalDuties;
@@ -151,19 +91,19 @@ public class RA {
         }
 
         /**
-         * Associates the given Duty with the given preference value.
+         * Associates the given Item with the given preference value.
          *     
-         * @param duty     The Duty instance to associate with the preference.
-         * @param priority The preference of the given Duty instance. Lower means more prefered.
+         * @param duty     The Item instance to associate with the preference.
+         * @param priority The preference of the given Item instance. Lower means more prefered.
          */
-        public void putPreference(Duty duty, Integer priority) {
+        public void putPreference(Item duty, Integer priority) {
             try {
                 ErrorChecker.inBounds("priority", priority, 0, tD);                
-            } catch (IntegerBoundException e) {
-                ErrorChecker.printExceptionToLog(e);
             } catch (IllegalArgumentException e) {
                 ErrorChecker.printExceptionToLog(e);
-            }
+            } catch (RuntimeException e) {
+                ErrorChecker.printExceptionToLog(e);
+            } 
             if (priority == 0) {
                 iD.add(duty);
             } else {

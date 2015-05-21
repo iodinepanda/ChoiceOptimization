@@ -21,9 +21,9 @@ package choiceOptimizer;
 
 import java.util.Collection;
 
-interface Population {
+public interface Population {
 
-    public void seed(Collection<? extends Chooser> chooseList, Collection<? extends Item> itemList);
-    public Mapping evolve();
+    void seed(Collection<? extends Chooser> chooseList, Collection<? extends Item> itemList);
+    Mapping evolve();
 
  }

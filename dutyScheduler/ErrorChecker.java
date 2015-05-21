@@ -1,4 +1,4 @@
-package dutyScheduler.customErrors;
+package dutyScheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -18,9 +18,6 @@ package dutyScheduler.customErrors;
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-import dutyScheduler.scheduler.RA;
-import dutyScheduler.scheduler.Duty;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,36 +40,34 @@ public class ErrorChecker {
 	
 	/**
 	 * Checks if a given integer with value 'val' is within the allowed bounds.
+	 * 
 	 * @param var the name of the variable that is being tested
 	 * @param val the value of the variable that is being tested
 	 * @param lower the lower bound on the integer's allowed values (inclusive), -1 is used to denote no lower bound 
 	 * @param upper the upper bound on the integer's allowed values (inclusive), -1 is used to denote no upper bound
-	 * @throws IntegerBoundException throws a custom error message if the integer is outside the allowed bounds
-	 * @throws IllegalArgumentException throws an exception if both the upper and lower bounds are undefined
 	 */
-	public static void inBounds(String var, int val, int lower, int upper) 
-							    throws IntegerBoundException, IllegalArgumentException {
+	public static void inBounds(String var, int val, int lower, int upper) {
 		if (upper == -1) {
 			if (lower == -1) {
-				throw new IllegalArgumentException("At least one bound must be defined.");
+				throw new RuntimeException("At least one bound must be defined.");
 			} else {
 				overBound(var, val, lower);
 			}
 		} else if (lower == -1) {
 			underBound(var, val, upper);
 		} else if (val > upper || val < lower) {
-			throw new IntegerBoundException(var, lower, upper, val);
+			throw new IllegalArgumentException(String.format("The given value %d is out of the "
+												+ "bounds %d <= x <= %d", val, lower, upper));
 		}
 	}
 	
 	/**
 	 * Assigns the integer at index j of cantDosByRA to how many duties the RA at index j of raList has labeled undoable, and assigns the integer at index i of cantDosByDuty to how many RAs have labeled the DutyDate at index i of dutyList undoable.
+	 *
 	 * @param raList an <code>ArrayList</code> containing all of the RAs
 	 * @param dutyList an <code>ArrayList</code> containing all of the duties
-	 * @throws InvalidFileContentsException  throws an exception if the required duties does not equal the total duties in the json data file
 	 */
-	public static void evalPrefs(ArrayList<RA> raList, ArrayList<Duty> dutyList) 
-								 throws InvalidFileContentsException {
+	public static void evalPrefs(ArrayList<RA> raList, ArrayList<Duty> dutyList) {
 		cantDosByRA = new int[raList.size()];
 		cantDosByDuty = new int[dutyList.size()];
 		prefSumPerRA = new int[raList.size()];
@@ -81,27 +76,26 @@ public class ErrorChecker {
 			for(int j = 0; j < raList.size(); j++){
 				if(i == 0)
 					dutiesToAssign += raList.get(j).requiredDuties();
-				if(!raList.get(j).eligibleDuty(dutyList.get(i))){
+				if(!raList.get(j).eligibleItem(dutyList.get(i))){
 					cantDosByDuty[i]++;
 					cantDosByRA[j]++;
 				}
 				else{
-					prefSumPerRA[j] += raList.get(j).dutyWeight(dutyList.get(i));
+					prefSumPerRA[j] += raList.get(j).itemWeight(dutyList.get(i));
 				}
 			}
 		}
 		if(dutiesToAssign != dutyList.size())
-			throw new InvalidFileContentsException("The number of duties to assign to each RA does not sum to the number of duties that need assignment. ");
+			throw new RuntimeException("The number of duties to assign to each RA does not sum to the number of duties that need assignment. ");
 	}
 	
 	/**
 	 * Checks and makes sure the preferences are (probably) of the form 1, 2, ..., n. 
-	 * @throws PreferenceConsistencyException throws an exception if this is not true
 	 */
-	public static void checkConsistency() throws PreferenceConsistencyException {
+	public static void checkConsistency() {
 		for(int i = 0; i < prefSumPerRA.length; i++)
 			if(prefSumPerRA[i] != (sumTo(cantDosByDuty.length - cantDosByRA[i])))
-				throw new PreferenceConsistencyException();
+				throw new IllegalArgumentException("One or more RAs have not labeled their doable duties from 1 to n, where n is totalDuties - (duties labeled as cant do). Please revise the preferences.");
 	}
 	
 	private static int sumTo(int n){
@@ -112,10 +106,12 @@ public class ErrorChecker {
 	 * Checks to see if the set of preferences has made the duties impossible to schedule by standard scheduling rules.
 	 * @throws ImpossiblePreferencesException throws an exception if one or more duties have been labeled as undoable by every RA
 	 */
-	public static void checkImpossible() throws ImpossiblePreferencesException {
+	public static void checkImpossible() {
 		for(int i = 0; i < cantDosByDuty.length; i++)
 			if(cantDosByDuty[i] == cantDosByRA.length)
-				throw new ImpossiblePreferencesException();
+				throw new IllegalArgumentException("One or more duties have been listed as undoable by every RA. "
+				+ "\nPlease run the algorithm again with the 'allowBads' argument or change the preference values."
+				+ "\nIt is advised to resolve this issue by changing the preferences, as running the algorithm with 'allowBads' drastically increases the time required to find a good solution.");
 	}
 	
 	/**
@@ -123,7 +119,7 @@ public class ErrorChecker {
 	 * @param raList an <code>ArrayList</code> containing all of the RAs
 	 * @throws GreedyException raises an exception if one or more RAs have listed too many duties as undoable
 	 */
-	public static void checkGreedy(ArrayList<RA> raList) throws GreedyException {
+	public static void checkGreedy(ArrayList<RA> raList) {
 		ArrayList<String> badRAs = new ArrayList<String>();
 		for(int i = 0; i < cantDosByRA.length; i++){
 			if(cantDosByRA[i] >= .5*cantDosByDuty.length){
@@ -131,7 +127,7 @@ public class ErrorChecker {
 			}
 		}
 		if(badRAs.size() > 0)
-			throw new GreedyException(badRAs);
+			throw new IllegalArgumentException(String.format("The following RAs have listed too many duties as undoable: %s\nRun the algorithm again with the ALLOW_GREEDY option, or change the preference input.", badRAs.toString()));
 	}
 	
 	/**
@@ -141,10 +137,10 @@ public class ErrorChecker {
 	 * @param lower the lower bound on the integer's allowed values (inclusive)
 	 * @throws IntegerBoundException throws a custom error message if the integer is outside the allowed bounds
 	 */
-	public static void overBound(String var, int val, int lower) throws IntegerBoundException {
+	public static void overBound(String var, int val, int lower) {
 		if(val >= lower)
 			return;
-		throw new IntegerBoundException(var, lower, val, true);
+		throw new IllegalArgumentException(String.format("Value %d is less than lower bound of %d.", val, lower));
 	}
 	
 	/**
@@ -154,10 +150,10 @@ public class ErrorChecker {
 	 * @param upper the upper bound on the integer's allowed values (inclusive)
 	 * @throws IntegerBoundException throws a custom error message if the integer is outside the allowed bounds
 	 */
-	public static void underBound(String var, int val, int upper) throws IntegerBoundException {
+	public static void underBound(String var, int val, int upper) {
 		if(val <= upper)
 			return;
-		throw new IntegerBoundException(var, upper, val);
+		throw new IllegalArgumentException(String.format("Value %d is greater than upper bound of %d.", val, upper));
 	}
 	
 	/**

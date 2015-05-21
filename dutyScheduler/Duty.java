@@ -1,4 +1,4 @@
-package dutyScheduler.scheduler;
+package dutyScheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele, Amit Akula
@@ -22,12 +22,10 @@ package dutyScheduler.scheduler;
 /**
  * Imports:
  *     -Java's built in Calendar class to reduce code redundancy
- *     -My ErrorChecker class, used to validate input before instantiating this class.
- *     -My IntegerBoundException class for more descriptive error messages.
  */
 import java.util.Calendar;
-import dutyScheduler.customErrors.ErrorChecker;
-import dutyScheduler.customErrors.IntegerBoundException;
+import choiceOptimizer.AbstractItem;
+import choiceOptimizer.Item;
 
 /**
  * A class used to represent a day on which RA Duty takes place. 
@@ -35,13 +33,12 @@ import dutyScheduler.customErrors.IntegerBoundException;
  *
  * @author Matthew Mussomele
  */
-public class Duty implements Comparable<Duty> {
+public class Duty extends AbstractItem {
 
     private static final int MIN_YEAR = 2014;
     private static final int MAX_MONTH = 11;
     private static final int MIN_MONTH = 0;
-    private String stringRep;
-
+    
     private Calendar date;
 
     /**
@@ -56,7 +53,7 @@ public class Duty implements Comparable<Duty> {
         try {
             ErrorChecker.inBounds("year", year, MIN_YEAR, -1);
             ErrorChecker.inBounds("month", month, MIN_MONTH, MAX_MONTH);
-        } catch (IntegerBoundException e) {
+        } catch (IllegalArgumentException e) {
             ErrorChecker.printExceptionToLog(e);
         
         } 
@@ -76,27 +73,6 @@ public class Duty implements Comparable<Duty> {
     }
 
     /**
-     * Returns a string representing this Duty. 
-     * The format is unspecified, but is guarenteed to reflect the date directly.
-     * 
-     * @return a string representation of this Duty.
-     */
-    @Override
-    public String toString() {
-        return stringRep;
-    }
-
-    /**
-     * Returns a hashcode of this Duty.
-     * 
-     * @return a hashcode of this Duty.
-     */
-    @Override
-    public int hashCode() {
-        return this.toString().hashCode();
-    }
-
-    /**
      * Returns the time represented by this Duty.
      * 
      * @return the milliseconds since the Epoch
@@ -111,29 +87,20 @@ public class Duty implements Comparable<Duty> {
      * @param  other another object to compare against 
      * @return       0 if they represent the same time, 1 if this Duty is later, -1 otherwise.
      */
-    public int compareTo(Duty other) {
-        long difference = getTime() - other.getTime();
-        if (difference > 0) {
-            return 1;
-        } else if (difference < 0) {
-            return -1;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * Compares this Duty against another Object for equialency.
-     * 
-     * @param  other The object to compare this Duty against
-     * @return       True if they represent the same day, false otherwise or if other is not a Duty
-     */
-    @Override
-    public boolean equals(Object other) {
+    @Override public int compareTo(Item other) {
         if (other instanceof Duty) {
-            return this.toString().equals(((Duty) other).toString());
+            long difference = getTime() - ((Duty) other).getTime();
+            if (difference > 0) {
+                return 1;
+            } else if (difference < 0) {
+                return -1;
+            } else {
+                return 0;
+            }
         } else {
-            return false;
+            ErrorChecker.printExceptionToLog(new IllegalArgumentException("Can only compare "
+                                             + "Duty instances to other Duty instances."));
+            return 0;
         }
     }
 

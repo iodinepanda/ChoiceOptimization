@@ -19,11 +19,11 @@ package choiceOptimizer;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface Item extends Comparable<Item> {
+public interface Item extends Comparable<Item> {
 
-    @Override public String toString();
-    @Override public int hashCode();
-    @Override public int compareTo(Item other);
-    @Override public boolean equals(Object other);
+    @Override String toString();
+    @Override int hashCode();
+    @Override int compareTo(Item other);
+    @Override boolean equals(Object other);
 
 }

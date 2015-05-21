@@ -1,4 +1,4 @@
-package dutyScheduler.scheduler;
+package dutyScheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -39,11 +39,6 @@ import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
-import dutyScheduler.customErrors.InvalidFileContentsException;
-import dutyScheduler.customErrors.PreferenceConsistencyException;
-import dutyScheduler.customErrors.ImpossiblePreferencesException;
-import dutyScheduler.customErrors.GreedyException;
-import dutyScheduler.customErrors.ErrorChecker;
 
 /**
  * Main class for running the RA duty scheduling algorithm. 
@@ -136,14 +131,14 @@ public class Scheduler {
                         break;
                     case "DATA_FILE":
                         if (!fieldValue.endsWith(".json")) {
-                            throw new InvalidFileContentsException(String.format("Data file must " 
+                            throw new IllegalArgumentException(String.format("Data file must " 
                                     + "be a json file, was a .%s.", fieldValue.split(".")[1]));
                         } else {
                             defaultdf = fieldValue;
                         }
                         break;
                     default:
-                        throw new InvalidFileContentsException(String.format("Invalid field name" 
+                        throw new IllegalArgumentException(String.format("Invalid field name" 
                                     + " %s on line %d.", fieldName, lineNumber));
                 }
                 lineNumber += 1;
@@ -151,8 +146,6 @@ public class Scheduler {
             }
         } catch (IOException e) {
             System.out.println("Using default values.");
-        } catch (InvalidFileContentsException e) {
-            ErrorChecker.printExceptionToLog(e);
         } catch (IllegalArgumentException e) {
             ErrorChecker.printExceptionToLog(e);
         } finally {
@@ -199,15 +192,9 @@ public class Scheduler {
             if (!ALLOW_GREEDY) {
                 ErrorChecker.checkGreedy(raList);
             }
-        } catch (PreferenceConsistencyException e) {
+        } catch (RuntimeException e) {
             ErrorChecker.printExceptionToLog(e);
-        } catch (ImpossiblePreferencesException e) {
-            ErrorChecker.printExceptionToLog(e);
-        } catch (GreedyException e) {
-            ErrorChecker.printExceptionToLog(e);
-        } catch (InvalidFileContentsException e) {
-            ErrorChecker.printExceptionToLog(e);
-        }
+        } 
     }
 
     private static String readFile() {

@@ -23,12 +23,12 @@ import java.util.Collection;
 
 public interface Mapping<K extends Chooser, V extends Item> extends Comparable <Mapping<K, V>> {
 
-    public Collection<V> getAssignments(K chooser);
-    public Mapping<K, V> mutate();
-    public double getCost();
-    public int equals(Mapping<K, V> other);
+    Collection<V> getAssignments(K chooser);
+    Mapping<K, V> mutate();
+    double getCost();
+    boolean equals(Object other);
     
-    @Override public int compareTo(Mapping<K, V> other);
-    @Override public int hashCode();
+    @Override int compareTo(Mapping<K, V> other);
+    @Override int hashCode();
 
 }

@@ -1,4 +1,4 @@
-package dutyScheduler.scheduler;
+package dutyScheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -31,40 +31,26 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
-import dutyScheduler.customErrors.ErrorChecker;
+import choiceOptimizer.AbstractMapping;
+import choiceOptimizer.Mapping;
 
 /**
  * A class for representing a schedule of RA Duties.
  * 
  * @author Matthew Mussomele
  */
-public class Schedule implements Comparable<Schedule> {
+public class Schedule extends AbstractMapping<RA, Duty> {
 
     private static final double MILLIS_PER_DAY = 86400000.0;
     private static final double ADJACENCY_PENALTY = 2.0;
-    private static final int SHIFT_BY = 32;
-
-    private HashMap<RA, ArrayList<Duty>> scheduleMap;
-    private double cost;
-    private int duties;
 
     /*
      * Constructs a new Schedule from the given ScheduleBuilder
      */
     private Schedule(ScheduleBuilder builder) {
-        scheduleMap = new HashMap<RA, ArrayList<Duty>>(builder.map);
-        this.duties = builder.d;
+        mappings = new HashMap<RA, ArrayList<Duty>>(builder.map);
+        items = builder.d;
         cost = calculateCost();
-    }
-
-    /**
-     * Returns a defensive copy of the RA's schedule.
-     * 
-     * @param  ra An RA instance
-     * @return    A defensive copy of the list of Duty instances assigned to ra.
-     */
-    public ArrayList<Duty> getAssignments(RA ra) {
-        return new ArrayList<Duty>(scheduleMap.get(ra));
     }
 
     /**
@@ -72,19 +58,19 @@ public class Schedule implements Comparable<Schedule> {
      * 
      * @return a mutated copy of this Schedule
      */
-    public Schedule mutate() {
-        ScheduleBuilder mutator = new ScheduleBuilder(scheduleMap.size(), duties);
+    public Mapping<RA, Duty> mutate() {
+        ScheduleBuilder mutator = new ScheduleBuilder(mappings.size(), items);
         RA[] swapping = getTwoAtRandom();
-        ArrayList<Duty> firstSwap = getAssignments(swapping[0]);
-        ArrayList<Duty> secondSwap = getAssignments(swapping[1]);
+        ArrayList<Duty> firstSwap = new ArrayList<Duty>(getAssignments(swapping[0]));
+        ArrayList<Duty> secondSwap = new ArrayList<Duty>(getAssignments(swapping[1]));
         swapDuties(firstSwap, secondSwap);
-        for (RA ra : scheduleMap.keySet()) {
+        for (RA ra : mappings.keySet()) {
             if (ra.equals(swapping[0])) {
                 mutator.putAssignmentList(ra, firstSwap);
             } else if (ra.equals(swapping[1])) {
                 mutator.putAssignmentList(ra, secondSwap);
             } else {
-                mutator.putAssignmentList(ra, getAssignments(ra));
+                mutator.putAssignmentList(ra, new ArrayList<Duty>(getAssignments(ra)));
             }
         }
         return mutator.build();
@@ -113,59 +99,14 @@ public class Schedule implements Comparable<Schedule> {
     @Override
     public String toString() {
         String result = "";
-        for (RA ra : scheduleMap.keySet()) {
+        for (RA ra : mappings.keySet()) {
             result += ra.toString() + " " + Double.toString(assignmentsCost(ra)) + "\n";
-            for (Duty duty : scheduleMap.get(ra)) {
+            for (Duty duty : mappings.get(ra)) {
                 result += "\t" + duty.toString() + "\n";
             }
             result += "\n";
         }
         return result;
-    }
-
-    /**
-     * Gets the 'cost' of a schedule. The cost is some function of the RA assignments. Also known
-     * as the fitness.
-     *         
-     * @return the cost of this schedule
-     */
-    public double getCost() {
-        return cost;
-    }
-
-    /**
-     * Compares a Schedule to another by their costs.
-     * 
-     * @param  other The Schedule to compare this against.
-     * @return A value less than 0 if this is smaller, greater than is this is bigger, else 0. 
-     */
-    public int compareTo(Schedule other) {
-        return Double.compare(cost, other.getCost());
-    }
-
-    /**
-     * Compares a Schedule to another Object for equality.
-     * @param  other The Object to be compares against
-     * @return       true if they are both Schedules and their costs are equal, false otherwise
-     */
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof Schedule) {
-            Schedule sched = (Schedule) other;
-            return (new Double(cost)).equals(sched.getCost());
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Returns a hash of this Schedule.
-     * @return a hash of this Schedule.
-     */
-    @Override
-    public int hashCode() {
-        long converted =  Double.doubleToLongBits(this.cost);
-        return (int) (converted ^ (converted >>> SHIFT_BY));
     }
 
     /**
@@ -177,12 +118,12 @@ public class Schedule implements Comparable<Schedule> {
         int first = -1;
         int second = -1;
         while (first == second) {
-            first = gen.nextInt(scheduleMap.size());
-            second = gen.nextInt(scheduleMap.size());
+            first = gen.nextInt(mappings.size());
+            second = gen.nextInt(mappings.size());
         }
         RA[] toReturn = new RA[2];
         int i = 0;
-        for (RA ra : scheduleMap.keySet()) {
+        for (RA ra : mappings.keySet()) {
             if (i == first) {
                 toReturn[0] = ra;
             } else if (i == second) {
@@ -296,9 +237,9 @@ public class Schedule implements Comparable<Schedule> {
         double myCost = 0;
         double maxCost = Double.MIN_VALUE;
         int maxDiscrepancy = Integer.MIN_VALUE;
-        for (RA ra : scheduleMap.keySet()) {
+        for (RA ra : mappings.keySet()) {
             double thisCost = assignmentsCost(ra);
-            int thisDiscrepancy = Math.abs(ra.requiredDuties() - scheduleMap.get(ra).size());
+            int thisDiscrepancy = Math.abs(ra.requiredDuties() - mappings.get(ra).size());
             if (thisCost > maxCost) {
                 maxCost = thisCost;
             }
@@ -314,14 +255,14 @@ public class Schedule implements Comparable<Schedule> {
      * Calculates the cost of a single RAs assignments in this Schedule.
      */
     private double assignmentsCost(RA ra) {
-        ArrayList<Duty> thisSchedule = scheduleMap.get(ra);
+        ArrayList<Duty> thisSchedule = mappings.get(ra);
         if (thisSchedule == null || thisSchedule.size() == 0) {
             return 0;
         }
         double myCost = 0;
         Duty last = null;
         for (Duty duty : thisSchedule) {
-            myCost += ra.dutyWeight(duty);
+            myCost += ra.itemWeight(duty);
             if (Scheduler.CONSIDER_ADJACENTS) {
                 myCost += adjacencyCost(last, duty);
             }

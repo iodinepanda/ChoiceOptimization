@@ -38,7 +38,7 @@ import choiceOptimizer.Item;
  */
 
 public class RA extends AbstractChooser {
-        
+    
     private int dutiesToAssign;
 
     /**
@@ -47,11 +47,11 @@ public class RA extends AbstractChooser {
      * 
      * @param  builder An RABuilder instance that this RA is constructed from
      */
-    private RA(RABuilder builder) {
-        preferences = new HashMap<Item, Integer>(builder.prefs);
-        name = builder.n;
-        dutiesToAssign = builder.dta;
-        invalidItems = new HashSet<Item>(builder.iD);
+    private RA(HashMap<Item, Integer> prefs, String name, int dta, HashSet<Item> invalid) {
+        preferences = new HashMap<Item, Integer>(prefs);
+        this.name = name;
+        dutiesToAssign = dta;
+        invalidItems = new HashSet<Item>(invalid);
     }
 
     /**
@@ -66,13 +66,10 @@ public class RA extends AbstractChooser {
     /**
      * A static builder class to allow RA instances to be immutable.
      */
-    public static class RABuilder {
+    public static class RABuilder extends AbstractChooser.ChooserBuilder {
 
-        private HashMap<Item, Integer> prefs;
-        private String n;
         private int tD;
         private int dta;
-        private HashSet<Item> iD;
 
         /**
          * Creates a new RABuilder.
@@ -83,9 +80,9 @@ public class RA extends AbstractChooser {
          */     
         public RABuilder(String name, int totalDuties, int dutiesToAssign) {
             this.prefs = new HashMap<Item, Integer>(totalDuties);
-            this.iD = new HashSet<Item>(totalDuties);
+            this.invalid = new HashSet<Item>(totalDuties);
 
-            this.n = name;
+            this.name = name;
             this.tD = totalDuties;
             this.dta = dutiesToAssign;
         }
@@ -96,16 +93,16 @@ public class RA extends AbstractChooser {
          * @param duty     The Item instance to associate with the preference.
          * @param priority The preference of the given Item instance. Lower means more prefered.
          */
-        public void putPreference(Item duty, Integer priority) {
+        @Override public void putPreference(Item duty, Integer priority) {
             try {
-                ErrorChecker.inBounds("priority", priority, 0, tD);                
+                ErrorChecker.inBounds("priority", priority, INVALID_ITEM_PRIORITY, tD);                
             } catch (IllegalArgumentException e) {
                 ErrorChecker.printExceptionToLog(e);
             } catch (RuntimeException e) {
                 ErrorChecker.printExceptionToLog(e);
             } 
-            if (priority == 0) {
-                iD.add(duty);
+            if (priority == INVALID_ITEM_PRIORITY) {
+                invalid.add(duty);
             } else {
                 prefs.put(duty, priority);
             }
@@ -116,8 +113,8 @@ public class RA extends AbstractChooser {
          * 
          * @return A new RA instance.
          */
-        public RA build() {
-            return new RA(this);
+        @Override public RA build() {
+            return new RA(prefs, name, dta, invalid);
         }
 
     }

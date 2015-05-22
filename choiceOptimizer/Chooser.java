@@ -28,4 +28,14 @@ public interface Chooser {
     @Override boolean equals(Object other);
     @Override int hashCode();
 
+    /**
+     * ChooserBuilder class should be used to allow Chooser intances to be immutable
+     */
+    abstract static class ChooserBuilder {
+
+        abstract void putPreference(Item duty, Integer priority);
+        abstract Chooser build();
+
+    }
+
 }

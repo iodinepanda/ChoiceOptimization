@@ -50,12 +50,18 @@ public abstract class AbstractItem implements Item {
      */
     @Override public boolean equals(Object other) {
         if (other instanceof AbstractItem) {
-            return stringRep.equals(((AbstractItem) other).stringRep);
+            return toString().equals(other.toString());
         } else {
             return false;
         }
     }
 
+    /**
+     * Compares this Item to another
+     * 
+     * @param other The other Item to compare against
+     * @return Must return 0 if this.equals(other), unless equals is overridden in implementing class
+     */
     @Override abstract public int compareTo(Item other);
 
 }

@@ -24,6 +24,8 @@ import java.util.HashSet;
 
 public abstract class AbstractChooser implements Chooser {
 
+    protected static final int INVALID_ITEM_PRIORITY = 0;
+
     protected HashMap<Item, Integer> preferences;
     protected String name;
     protected HashSet<Item> invalidItems;
@@ -66,7 +68,7 @@ public abstract class AbstractChooser implements Chooser {
      */
     @Override public boolean equals(Object other) {
         if (other instanceof AbstractChooser) {
-            return name.equals(((AbstractChooser) other).toString());
+            return name.equals(other.toString());
         } else {
             return false;
         }
@@ -79,6 +81,26 @@ public abstract class AbstractChooser implements Chooser {
      */
     @Override public int hashCode() {
         return name.hashCode();
+    }
+
+    public static abstract class ChooserBuilder {
+
+        protected HashMap<Item, Integer> prefs;
+        protected String name;
+        protected HashSet<Item> invalid;
+
+        public void putPreference(Item item, Integer priority) {
+            if (item == null || priority == null) {
+                return;
+            } else if (priority == INVALID_ITEM_PRIORITY) {
+                invalid.add(item);
+            } else {
+                prefs.put(item, priority);
+            }
+        }
+
+        public abstract Chooser build();
+
     }
 
 }

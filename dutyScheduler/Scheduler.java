@@ -54,6 +54,7 @@ public class Scheduler {
     private static final int SECS_PER_MINUTE = 60;
     private static final int MILLIS_PER_SEC = 1000;
 
+    static final int INVALID_ITEM_PRIORITY = 0;
     static final int SEED_COUNT;
     static final int EVOLVE_ITERS;
     static final int NUM_RUNS;

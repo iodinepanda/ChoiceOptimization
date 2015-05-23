@@ -57,15 +57,13 @@ public class Duty extends AbstractItem {
         date.set(year, month, day); //Note: the constructor trusts that the day is valid
         String formatString = "%d-";
         if (month < 10) {
-            formatString += "0%d-";
-        } else {
-            formatString += "%d-";
+            formatString += "0";
         }
+        formatString += "%d-";
         if (day < 10) {
-            formatString += "0%d";
-        } else {
-            formatString += "%d";
+            formatString += "0";
         }
+        formatString += "%d";
         stringRep = String.format(formatString, year, month, day);
     }
 

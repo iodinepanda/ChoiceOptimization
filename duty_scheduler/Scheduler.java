@@ -1,4 +1,4 @@
-package dutyScheduler;
+package duty_scheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -19,23 +19,19 @@ package dutyScheduler;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Imports:
- *     -Java's built in ArrayList class for keeping track of the RA's and Duty'
- *     -Java's built in BufferReader class for reading the config file
- *     -Java's built in FileReader class for reading the config file
- *     -Java's built in IOException for handling issues with file reading
- */
-import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.File;
+
 import java.text.SimpleDateFormat;
+
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.Date;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -172,10 +168,16 @@ public class Scheduler {
         }
     }
 
+    /**
+     * Private construction to prevent instantiation.
+     */
     private Scheduler() {
         throw new AssertionError();
     }
 
+    /**
+     * Reads in a JSON data file and constructs RA and Duty instances from it. 
+     */
     private static void parseData() {
         JSONObject data = new JSONObject(new String(readFile()));
         createDutyList(data.getJSONArray("dates"));
@@ -198,6 +200,11 @@ public class Scheduler {
         } 
     }
 
+    /**
+     * Gets the content of a plain text file.
+     * 
+     * @return The contents of the data file as a String
+     */
     private static String readFile() {
         BufferedReader reader = null;
         String result = "";
@@ -224,6 +231,11 @@ public class Scheduler {
         return result;
     }
 
+    /**
+     * Creates an ArrayList of RA instances from a JSONArray of encoded data
+     * 
+     * @param jsonRAs A JSONArray contains information about RAs
+     */
     private static void createRAList(JSONArray jsonRAs) {
         try {
             for (int i = 0; i < jsonRAs.length(); i += 1) {
@@ -243,6 +255,11 @@ public class Scheduler {
         }
     }
 
+    /**
+     * Creates an ArrayList of Duty instances from a JSONArray of encoded data
+     * 
+     * @param jsonDuties A JSONArray contains information about Duty instances
+     */
     private static void createDutyList(JSONArray jsonDuties) {
         try {
             for (int i = 0; i < jsonDuties.length(); i += 1) {
@@ -255,12 +272,17 @@ public class Scheduler {
         }
     }
 
+    /**
+     * Runs the choice optimization algorithm on the data and finds a good schedule
+     * 
+     * @return The best schedule found
+     */
     private static Schedule run() {
         Schedule best = null;
         Schedule localBest = null;
-        Generation<RA, Duty> thisGen = null;
+        Generation thisGen = null;
         for (int i = 0; i < NUM_RUNS; i += 1) {
-            thisGen = new Generation<RA, Duty>();
+            thisGen = new Generation();
             thisGen.seed(raList, dutyList);
             localBest = thisGen.evolve();
             if (best == null || localBest.getCost() < best.getCost()) {
@@ -270,6 +292,12 @@ public class Scheduler {
         return best;
     }
 
+    /**
+     * Generates a String representation of the runtime of the algorithm
+     * 
+     * @param nanos The number of nanoseconds that the algorithm took to run
+     * @return A string describing how long the algorithm took to finish execution
+     */
     private static String runTime(long nanos) {
         long minutes = TimeUnit.NANOSECONDS.toMinutes(nanos) 
                         - (TimeUnit.NANOSECONDS.toHours(nanos) * MINS_PER_HR);
@@ -281,6 +309,12 @@ public class Scheduler {
                              minutes, seconds, millis);
     }
 
+    /**
+     * Prints the results of the algorithm to a file
+     * 
+     * @param best The best Schedule found during the run
+     * @param runTimeReport A String describing the runtime of the algorithm
+     */
     private static void printResults(Schedule best, String runTimeReport) {
         String resultsFile = "schedule_" 
                         + (new SimpleDateFormat("MM-dd-yyyy-hh:mm")).format(new Date()) + ".sched";
@@ -297,6 +331,11 @@ public class Scheduler {
         }
     }
 
+    /**
+     * Main
+     * 
+     * @param args Command line arguments (This code takes nonec)
+     */
     public static void main(String[] args) {
         try {
             long timeElapsed = System.nanoTime();

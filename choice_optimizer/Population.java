@@ -1,4 +1,4 @@
-package choiceOptimizer;
+package choice_optimizer;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -21,9 +21,26 @@ package choiceOptimizer;
 
 import java.util.Collection;
 
+/**
+ * An interface for describing a population used in a genetic algorithm.
+ * This interface is intended to be extended for solving choice optimization problems.
+ *
+ * @author Matthew Mussomele
+ */
 public interface Population<C extends Chooser, I extends Item> {
 
-    void seed(Collection<C> chooseList, Collection<I> itemList);
+    /**
+     * Seed a Population instance with a mapping of Choosers to Items
+     * @param chooserList the list of choosers to be used in the seed
+     * @param itemList the list of items to be used in the seed
+     */
+    void seed(Collection<C> chooserList, Collection<I> itemList);
+
+    /**
+     * Starts the running of a genetic algorithm on this Population
+     * 
+     * @return The best Mapping of Choosers to Items found during evolution
+     */
     Mapping evolve();
 
- }
+}

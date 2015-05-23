@@ -1,4 +1,4 @@
-package dutyScheduler;
+package duty_scheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele, Amit Akula
@@ -19,13 +19,10 @@ package dutyScheduler;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Imports:
- *     -Java's built in Calendar class to reduce code redundancy
- */
 import java.util.Calendar;
-import choiceOptimizer.AbstractItem;
-import choiceOptimizer.Item;
+
+import choice_optimizer.AbstractItem;
+import choice_optimizer.Item;
 
 /**
  * A class used to represent a day on which RA Duty takes place. 

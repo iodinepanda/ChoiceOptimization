@@ -1,4 +1,4 @@
-package choiceOptimizer;
+package choice_optimizer;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -23,6 +23,12 @@ import java.util.HashMap;
 import java.util.Collection;
 import java.util.ArrayList;
 
+/**
+ * An abstract class representing assignment mappings in a choice optimization algorithm.
+ * Built for extension.
+ *
+ * @author Matthew Mussomele
+ */
 public abstract class AbstractMapping<K extends Chooser, V extends Item> implements Mapping<K, V> {
 
     private static final int SHIFT_BY = 32;
@@ -41,11 +47,16 @@ public abstract class AbstractMapping<K extends Chooser, V extends Item> impleme
         return new ArrayList<V>(mappings.get(chooser));
     }
 
+    /**
+     * Returns a defensively mutated copy of this Mapping. For use with genetic evolution.
+     * 
+     * @return A new, mutated version of this mapping
+     */
     public abstract Mapping<K, V> mutate();
     
     /**
-     * Gets the 'cost' of a mapping. The cost is some function of the Chooser assignments. Also known
-     * as the fitness.
+     * Gets the 'cost' of a mapping. The cost is some function of the Chooser assignments. 
+     * Also known as the fitness.
      *         
      * @return the cost of this mapping
      */
@@ -71,7 +82,7 @@ public abstract class AbstractMapping<K extends Chooser, V extends Item> impleme
      * Compares a Mapping to another by their costs.
      * 
      * @param  other The Mapping to compare this against.
-     * @return       A value less than 0 if this is smaller, greater than is this is bigger, else 0. 
+     * @return       A value less than 0 if this is smaller, greater than if this is bigger, else 0 
      */
     @Override public int compareTo(Mapping<K, V> other) {
         return Double.compare(cost, other.getCost());
@@ -85,6 +96,52 @@ public abstract class AbstractMapping<K extends Chooser, V extends Item> impleme
     @Override public int hashCode() {
         long converted =  Double.doubleToLongBits(this.cost);
         return (int) (converted ^ (converted >>> SHIFT_BY));
+    }
+
+    /**
+     * An abstract class used to build Mapping instances.
+     */
+    public abstract static class AbstractMappingBuilder<K extends Chooser, V extends Item> 
+                                                        implements Mapping.MappingBuilder<K, V> {
+
+        protected HashMap<K, ArrayList<V>> map;
+
+        /**
+         * Assigns the given Item to the given Chooser in this schedule.
+         * 
+         * @param chooser   The Chooser to assign the Item to
+         * @param item      The Item to assign
+         */
+        public void putAssignment(K chooser, V item) {
+            if (chooser == null || item == null) {
+                throw new NullPointerException("Cannot have null Chooser or Item");
+            }
+            if (!map.containsKey(chooser)) {
+                map.put(chooser, new ArrayList<V>());
+            }
+            map.get(chooser).add(item);
+        }
+
+        /**
+         * Assigns all the Item instances in an ArrayList to the given Chooser
+         * 
+         * @param chooser     The Chooser to assign the Items to
+         * @param list        The list of Item instances to be assigned. 
+         */
+        public void putAssignmentList(K chooser, ArrayList<V> list) {
+            if (list == null) {
+                throw new NullPointerException("Cannot assign a null list.");
+            }
+            map.put(chooser, list);
+        }
+
+        /**
+         * Builds a new Mapping instance from this MappingBuilder
+         * 
+         * @return a new Mapping instance
+         */
+        public abstract Mapping<K, V> build();
+
     }
 
 }

@@ -1,4 +1,4 @@
-package choiceOptimizer;
+package choice_optimizer;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -22,6 +22,11 @@ package choiceOptimizer;
 import java.util.HashMap;
 import java.util.HashSet;
 
+/**
+ * An abstract class build for extension in a choice optimization algorithm.
+ *
+ * @author Matthew Mussomele
+ */
 public abstract class AbstractChooser implements Chooser {
 
     protected static final int INVALID_ITEM_PRIORITY = 0;
@@ -44,7 +49,7 @@ public abstract class AbstractChooser implements Chooser {
      * Gets the preference value of a item relative to this Chooser instance
      * 
      * @param  item A item object to get the preference of
-     * @return The weight of item in this Chooser instance's preferences. Lower values are more prefered.
+     * @return The weight of item in this Chooser instance's preferences
      */
     public int itemWeight(Item item) {
         Integer toReturn = preferences.get(item);
@@ -64,7 +69,7 @@ public abstract class AbstractChooser implements Chooser {
      * Compares this to another Object for equivalency.
      * 
      * @param  other The other Object to be compared against.
-     * @return true if the the other Object is an AbstractChooser and if it has the same name, false otherwise
+     * @return true if the the other Object is an AbstractChooser and if it has the same name
      */
     @Override public boolean equals(Object other) {
         if (other instanceof AbstractChooser) {
@@ -83,15 +88,23 @@ public abstract class AbstractChooser implements Chooser {
         return name.hashCode();
     }
 
-    public static abstract class ChooserBuilder {
+    /**
+     * An abstract class build for extension, used to build Chooser instances.
+     */
+    public abstract static class AbstractChooserBuilder implements Chooser.ChooserBuilder {
 
         protected HashMap<Item, Integer> prefs;
         protected String name;
         protected HashSet<Item> invalid;
 
+        /**
+         * Assigned the given Item the given preference with this ChooserBuilder.
+         * @param item The Item to give priority to
+         * @param priority the preference value of the item
+         */
         public void putPreference(Item item, Integer priority) {
             if (item == null || priority == null) {
-                return;
+                throw new NullPointerException("Cannot insert null item or preference.");
             } else if (priority == INVALID_ITEM_PRIORITY) {
                 invalid.add(item);
             } else {
@@ -99,6 +112,10 @@ public abstract class AbstractChooser implements Chooser {
             }
         }
 
+        /**
+         * Builds a new Chooser instance from this builder
+         * @return a new Chosoer instance
+         */
         public abstract Chooser build();
 
     }

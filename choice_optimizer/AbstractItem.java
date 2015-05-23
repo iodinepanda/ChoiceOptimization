@@ -1,4 +1,4 @@
-package choiceOptimizer;
+package choice_optimizer;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -19,6 +19,12 @@ package choiceOptimizer;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * An abstract class representing Items to be assigned in a choice optimization algorithm.
+ * Built for extension.
+ *
+ * @author Matthew Mussomele
+ */
 public abstract class AbstractItem implements Item {
 
     protected String stringRep;
@@ -60,8 +66,8 @@ public abstract class AbstractItem implements Item {
      * Compares this Item to another
      * 
      * @param other The other Item to compare against
-     * @return Must return 0 if this.equals(other), unless equals is overridden in implementing class
+     * @return Must return 0 if this.equals(other) unless equals is overridden in implementing class
      */
-    @Override abstract public int compareTo(Item other);
+    @Override public abstract int compareTo(Item other);
 
 }

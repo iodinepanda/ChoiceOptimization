@@ -1,4 +1,4 @@
-package dutyScheduler;
+package duty_scheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -19,16 +19,11 @@ package dutyScheduler;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Imports:
- *     -Java's built in HashMap class for quick accessing of duty preference values.
- *     -Java's built in HashSet class for quick lookup of duty eligibility.
- *     -My static ErrorChecker class for data validation and reporting
- */
 import java.util.HashMap;
 import java.util.HashSet;
-import choiceOptimizer.AbstractChooser;
-import choiceOptimizer.Item;
+
+import choice_optimizer.AbstractChooser;
+import choice_optimizer.Item;
 
 /**
  * A class representing Resident Assistants for use with my genetic scheduling algorithm.
@@ -45,7 +40,10 @@ public class RA extends AbstractChooser {
      * A private constructor for the RA class. This is private to enforce usage of the RABuilder
      * nested class, which allows for the immutability of RA instances.
      * 
-     * @param  builder An RABuilder instance that this RA is constructed from
+     * @param prefs   The map of preferences belonging to this RA
+     * @param name    The name of this RA
+     * @param dta     The number of duties to assign to this RA
+     * @param invalid The set of Duty instances that are not to be assigned to this RA
      */
     private RA(HashMap<Item, Integer> prefs, String name, int dta, HashSet<Item> invalid) {
         preferences = new HashMap<Item, Integer>(prefs);
@@ -66,7 +64,7 @@ public class RA extends AbstractChooser {
     /**
      * A static builder class to allow RA instances to be immutable.
      */
-    public static class RABuilder extends AbstractChooser.ChooserBuilder {
+    public static class RABuilder extends AbstractChooser.AbstractChooserBuilder {
 
         private int tD;
         private int dta;
@@ -95,7 +93,7 @@ public class RA extends AbstractChooser {
          */
         @Override public void putPreference(Item duty, Integer priority) {
             try {
-                ErrorChecker.inBounds("priority", priority, INVALID_ITEM_PRIORITY, tD);                
+                ErrorChecker.inBounds("priority", priority, INVALID_ITEM_PRIORITY, tD);   
             } catch (IllegalArgumentException e) {
                 ErrorChecker.printExceptionToLog(e);
             } catch (RuntimeException e) {

@@ -1,4 +1,4 @@
-package choiceOptimizer;
+package choice_optimizer;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -19,16 +19,16 @@ package choiceOptimizer;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Collection;
+/**
+ * An interface describing an Item to be assigned to Choosers in a choice optimization algorithm
+ *
+ * @author Matthew Mussomele
+ */
+public interface Item extends Comparable<Item> {
 
-public interface Mapping<K extends Chooser, V extends Item> extends Comparable <Mapping<K, V>> {
-
-    Collection<V> getAssignments(K chooser);
-    Mapping<K, V> mutate();
-    double getCost();
-    boolean equals(Object other);
-    
-    @Override int compareTo(Mapping<K, V> other);
+    @Override String toString();
     @Override int hashCode();
+    @Override int compareTo(Item other);
+    @Override boolean equals(Object other);
 
 }

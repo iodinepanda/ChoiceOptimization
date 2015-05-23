@@ -1,4 +1,4 @@
-package dutyScheduler;
+package duty_scheduler;
 
 /**
  * Copyright (C) 2015 Matthew Mussomele
@@ -19,20 +19,13 @@ package dutyScheduler;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Imports:
- *     -Java's built in HashMap class for scheduling.
- *     -Java's built in ArrayList class for storing assignments.
- *     -Java's built in Random class for getting random RA's
- *     -Java's built in Set class 
- *     -My static ErrorChecker class for data validation and reporting
- */
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
-import choiceOptimizer.AbstractMapping;
-import choiceOptimizer.Mapping;
+
+import choice_optimizer.AbstractMapping;
+import choice_optimizer.Mapping;
 
 /**
  * A class for representing a schedule of RA Duties.
@@ -44,12 +37,15 @@ public class Schedule extends AbstractMapping<RA, Duty> {
     private static final double MILLIS_PER_DAY = 86400000.0;
     private static final double ADJACENCY_PENALTY = 2.0;
 
-    /*
+    /**
      * Constructs a new Schedule from the given ScheduleBuilder
+     *
+     * @param  map The assignment map that belongs to this Schedule instance
+     * @param  d   The number of duties in this Schedule
      */
-    private Schedule(ScheduleBuilder builder) {
-        mappings = new HashMap<RA, ArrayList<Duty>>(builder.map);
-        items = builder.d;
+    private Schedule(HashMap<RA, ArrayList<Duty>> map, int d) {
+        mappings = map;
+        items = d;
         cost = calculateCost();
     }
 
@@ -76,8 +72,11 @@ public class Schedule extends AbstractMapping<RA, Duty> {
         return mutator.build();
     }
 
-    /*
+    /**
      * Takes in two ArrayLists and swaps random elements in place.
+     *
+     * @param firstSwap  The first ArrayList to swap duties from
+     * @param secondSwap The second ArrayList to swao duties from
      */
     private void swapDuties(ArrayList<Duty> firstSwap, ArrayList<Duty> secondSwap) {
         Random gen = new Random();
@@ -137,9 +136,8 @@ public class Schedule extends AbstractMapping<RA, Duty> {
     /**
      * A class used to construct Schedule instances while allowing immutability.
      */
-    public static class ScheduleBuilder {
+    public static class ScheduleBuilder extends AbstractMapping.AbstractMappingBuilder<RA, Duty> {
 
-        private HashMap<RA, ArrayList<Duty>> map;
         private int d;
         private int r;
 
@@ -166,28 +164,11 @@ public class Schedule extends AbstractMapping<RA, Duty> {
         }
 
         /**
-         * Assigns the given Duty to the given RA in this schedule.
+         * Checks if a given RA has been assigned it's maximum number of duties.
          * 
-         * @param ra   The RA to assign the Duty to
-         * @param duty The Duty to assign
-         */
-        public void putAssignment(RA ra, Duty duty) {
-            if (!map.containsKey(ra)) {
-                map.put(ra, new ArrayList<Duty>());
-            } 
-            map.get(ra).add(duty);
-        }
-
-        /**
-         * Assigns all the Duty instances in an ArrayList to the given RA
-         * 
-         * @param ra     The Ra to assign the Duties to
-         * @param duties The list of Duty instances to be assigned. 
-         */
-        public void putAssignmentList(RA ra, ArrayList<Duty> duties) {
-            map.put(ra, duties);
-        }
-
+         * @param ra The RA instance to check
+         * @return returns true is the number of duties assigned so far equals the number required
+         */ 
         public boolean doneAssigning(RA ra) {
             ArrayList<Duty> assignedSoFar = map.get(ra);
             return assignedSoFar != null && assignedSoFar.size() == ra.requiredDuties();
@@ -207,14 +188,16 @@ public class Schedule extends AbstractMapping<RA, Duty> {
          */
         public Schedule build() {
             if (detValid()) {
-                return new Schedule(this);
+                return new Schedule(map, d);
             } else {
                 return null;
             }
         }
 
-        /*
+        /**
          * Evaluates this ScheduleBuilder's validity.
+         *
+         * @return True if the number of assigned duties equals the total number of duties
          */
         private boolean detValid() {
             int dutySum = 0;
@@ -230,8 +213,10 @@ public class Schedule extends AbstractMapping<RA, Duty> {
 
     }    
 
-    /*
+    /**
      * Calculates the cost of a this Schedule
+     *
+     * @return the cost of this Schedule as a double
      */
     private double calculateCost() {
         double myCost = 0;
@@ -251,8 +236,11 @@ public class Schedule extends AbstractMapping<RA, Duty> {
         return myCost + maxCost + maxDiscrepancy;
     }
 
-    /*
+    /**
      * Calculates the cost of a single RAs assignments in this Schedule.
+     *
+     * @param ra the RA who's schedule to find the cost of
+     * @return the cost of a single RAs assignments in this Schedule
      */
     private double assignmentsCost(RA ra) {
         ArrayList<Duty> thisSchedule = mappings.get(ra);
@@ -271,8 +259,12 @@ public class Schedule extends AbstractMapping<RA, Duty> {
         return myCost / thisSchedule.size();
     }
 
-    /*
+    /**
      * Calculates any additional costs incurred by two duties being next to each other.
+     *
+     * @param  prev The earlier duty to use in the test
+     * @param  next The later duty to use in the test
+     * @return the penalty for any two assigned duties being with a day of each other
      */
     private double adjacencyCost(Duty prev, Duty next) {
         if (prev == null) {

@@ -5,6 +5,7 @@ A general application package for external use is in the works so that this proj
 
 TODO:
     - Write JUnit tests on small test data (find optimal solution, ensure that COA falls with some range of it)
+    - Implement full genetic function on top of current mutation-only approach
 
 Team:
     -mmussomele

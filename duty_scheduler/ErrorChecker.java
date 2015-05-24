@@ -35,7 +35,7 @@ import java.io.File;
 public class ErrorChecker {
 
     public static final int NO_BOUND = -1;
-    private static final int PERC_ALLOWED_UNDOABLE = .5;
+    private static final double PERC_ALLOWED_UNDOABLE = .5;
     
     private static int[] cantDosByRA;
     private static int[] cantDosByDuty;

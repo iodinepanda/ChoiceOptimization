@@ -94,28 +94,43 @@ public class Scheduler {
                 switch (fieldName) {
                     case "SEED_COUNT":
                         defaultsc = Integer.parseInt(fieldValue);
-                        if (defaultsc % 2 == 1) {
-                            throw new IllegalArgumentException("Must have an even number" 
-                                                               + " of Schedules.");
+                        if (defaultsc % 2 == 1 || defaultsc <= 0) {
+                            throw new IllegalArgumentException("SEED_COUNT must be positive and "
+                                                                + "even.");
                         }
                         break;
                     case "EVOLVE_ITERS":
                         defaultei = Integer.parseInt(fieldValue);
+                        if (defaultei <= 0) {
+                            throw new IllegalArgumentException("EVOLVE_ITERS must be positive.");
+                        }
                         break;
                     case "NUM_RUNS":
                         defaultnr = Integer.parseInt(fieldValue);
                         if (defaultnr <= 0) {
-                            throw new IllegalArgumentException("Must run algorithm at least once.");
+                            throw new IllegalArgumentException("NUM_RUNS must be positive.");
                         }
                         break;
                     case "RESOURCE_FACTOR":
                         defaultrf = Integer.parseInt(fieldValue);
+                        if (defaultrf <= 1) {
+                            throw new IllegalArgumentException("RESOURCE_FACTOR must be greater "
+                                                                + "than one");
+                        }
                         break;
                     case "ALLOWED_SEED_ATTEMPTS":
                         defaultasa = Integer.parseInt(fieldValue);
+                        if (defaultasa <= 0) {
+                            throw new IllegalArgumentException("ALLOWED_SEED_ATTEMPTS must be "
+                                                                + "positive.");
+                        }
                         break;
                     case "MUTATION_CHANCE":
                         defaultmc = Double.parseDouble(fieldValue);
+                        if (defaultmc <= 0 || defaultmc >= 1) {
+                            throw new IllegalArgumentException("MUTATION_CHANCE must be within "
+                                                                + "(0, 1)");
+                        }
                         break;
                     case "ALLOW_ILLEGALS":
                         defaultai = Boolean.parseBoolean(fieldValue);

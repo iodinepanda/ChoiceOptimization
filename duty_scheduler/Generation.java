@@ -191,7 +191,7 @@ public class Generation implements Population<RA, Duty> {
         }
         ArrayList<Schedule> babySchedules = new ArrayList<Schedule>(schedules.size());
         for (Schedule s : schedules) {         
-            Schedule next = (Schedule) s.mutate();
+            Schedule next = s.mutate();
             while (next == null || schedules.contains(next) || babySchedules.contains(next)) {
                 next = getNextSeed(rList, new ArrayList<Duty>(dList));
             }

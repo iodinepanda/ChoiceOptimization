@@ -54,7 +54,7 @@ public class Schedule extends AbstractMapping<RA, Duty> {
      * 
      * @return a mutated copy of this Schedule
      */
-    public Mapping<RA, Duty> mutate() {
+    public Schedule mutate() {
         ScheduleBuilder mutator = new ScheduleBuilder(mappings.size(), items);
         RA[] swapping = getTwoAtRandom();
         ArrayList<Duty> firstSwap = new ArrayList<Duty>(getAssignments(swapping[0]));

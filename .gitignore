@@ -1,6 +1,6 @@
 *.class
 *.sched
-*.json
+
 *.xlsx
 *.txt
 *.log

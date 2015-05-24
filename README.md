@@ -7,6 +7,7 @@ TODO:
 - Write JUnit tests on small test data (find optimal solution, ensure that COA falls with some range of it)
 - Implement full genetic function on top of current mutation-only approach
 - Make wiki explaining the process of extending the choice_optimization package (long term, not urgent)
+- Move wiki to website
 
 Team:
 - mmussomele

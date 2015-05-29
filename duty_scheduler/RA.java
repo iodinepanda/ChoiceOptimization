@@ -31,7 +31,6 @@ import choice_optimizer.Item;
  * 
  * @author Matthew Mussomele
  */
-
 public class RA extends AbstractChooser {
     
     private int dutiesToAssign;

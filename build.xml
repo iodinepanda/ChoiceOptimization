@@ -1,0 +1,45 @@
+<project name="ChoiceOptimization" default="compile" basedir=".">
+    
+    <property name="src" location="."/>
+    <property name="build" location="build"/>
+    <property name="test" location="dist/lib/duty_scheduler_test.jar"/>
+    
+    <target name="init" description="Creating build directories">
+        <tstamp/>
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="compile" depends="init" description="Compiling project">
+        <javac includeantruntime="false" srcdir="${src}" destdir="${build}"/>
+    </target>
+
+    <target name="release" depends="compile" description="Building the release distribution">
+        <mkdir dir="dist/lib/release"/>
+        <jar jarfile="dist/lib/release/duty_scheduler-${DSTAMP}.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="duty_scheduler.Scheduler"/>
+            </manifest>
+            <exclude name="${build}/testing"/>
+        </jar>
+    </target>
+
+    <target name="debug" depends="compile" description="Building the test jar">
+        <mkdir dir="dist/lib/"/>
+        <jar destfile="dist/lib/duty_scheduler_test.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="testing/TestLauncher"/>
+            </manifest>
+            <zipgroupfileset dir="lib" includes="junit.jar,hamcrest.jar"/>
+        </jar>
+    </target>
+
+    <target name="clean" description="Cleaning up project directory">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+    </target>
+
+    <target name="runtests" depends="debug" description="Running JUnit tests">
+        <java jar="${test}" fork="true"/>
+    </target>
+
+</project>

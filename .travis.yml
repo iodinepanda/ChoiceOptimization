@@ -3,4 +3,4 @@ jdk:
   - oraclejdk8
   - oraclejdk7
 
-script: javac ./**/*.java
+script: ant compile && ant runtests

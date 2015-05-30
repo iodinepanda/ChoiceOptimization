@@ -4,14 +4,20 @@
     <property name="build" location="build"/>
     <property name="test" location="dist/lib/duty_scheduler_test.jar"/>
     <property name="dist" location="dist"/>
-    
+
     <target name="init" description="Creating build directories">
         <tstamp/>
         <mkdir dir="${build}"/>
     </target>
 
     <target name="compile" depends="init" description="Compiling project">
-        <javac includeantruntime="false" srcdir="${src}" destdir="${build}"/>
+        <javac includeantruntime="false" srcdir="${src}" destdir="${build}">
+            <classpath>
+                <pathelement path="${classpath}"/>
+                <pathelement location="lib/junit.jar"/>
+                <pathelement location="lib/hamcrest.jar"/>
+            </classpath>
+        </javac>
     </target>
 
     <target name="release" depends="compile" description="Building the release distribution">

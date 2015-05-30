@@ -3,6 +3,7 @@
     <property name="src" location="."/>
     <property name="build" location="build"/>
     <property name="test" location="dist/lib/duty_scheduler_test.jar"/>
+    <property name="dist" location="dist"/>
     
     <target name="init" description="Creating build directories">
         <tstamp/>

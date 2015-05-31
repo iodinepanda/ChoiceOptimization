@@ -23,6 +23,8 @@ import duty_scheduler.RA;
 import duty_scheduler.RA.RABuilder;
 import duty_scheduler.Duty;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,14 +35,44 @@ import org.junit.runner.notification.Failure;
 public class TestRA {
 
     private RA test;
+    private ArrayList<Duty> duties;
 
     @Before
     public void setUp() {
-        RABuilder builder = new RABuilder("Bob", 3, 3);
-        builder.putPreference(new Duty(2015, 1, 1), 1);
-        builder.putPreference(new Duty(2015, 1, 2), 2);
-        builder.putPreference(new Duty(2015, 1, 3), 3);
+        RABuilder builder = new RABuilder("Bob", 4, 2);
+        duties = new ArrayList<Duty>();
+        duties.add(new Duty(2015, 1, 1));
+        duties.add(new Duty(2015, 1, 2));
+        duties.add(new Duty(2015, 1, 3));
+        duties.add(new Duty(2015, 1, 4));
+        for (int i = 0; i < duties.size(); i += 1) {
+            builder.putPreference(duties.get(i), i);
+        }
         test = builder.build();
+    }
+
+    @Test
+    public void testBasics() {
+        assertEquals(2, test.requiredDuties());
+        assertEquals("Bob", test.toString());
+        assertEquals("Bob".hashCode(), test.hashCode());
+        assertTrue(test.equals(test));
+    }
+
+    @Test
+    public void testWeights() {
+        assertEquals(Integer.MAX_VALUE, test.itemWeight(duties.get(0)));
+        for (int i = 1; i < duties.size(); i += 1) {
+            assertEquals(i, test.itemWeight(duties.get(i)));
+        }
+    }
+
+    @Test
+    public void testEligible() {
+        assertFalse(test.eligibleItem(duties.get(0)));
+        for (int i = 1; i < duties.size(); i += 1) {
+            assertTrue(test.eligibleItem(duties.get(i)));
+        }
     }
 
 }

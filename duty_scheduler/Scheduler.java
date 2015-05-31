@@ -72,9 +72,9 @@ public class Scheduler {
      * formatted improperly, then the program logs an exception and exits.
      */
     static {
-        int defaultsc = 10;
-        int defaultei = 100;
-        int defaultnr = 100;
+        int defaultsc = 30;
+        int defaultei = 1000;
+        int defaultnr = 20;
         int defaultrf = 10;
         int defaultasa = 1000;
         double defaultmc = MUTATE_DEFAULT;

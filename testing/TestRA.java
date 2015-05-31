@@ -28,17 +28,21 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
 
+/**
+ * JUnit Testing Class for the duty_scheduler.RA class.
+ *
+ * @author Matthew Mussomele
+ */
 public class TestRA {
 
     private RA test;
     private ArrayList<Duty> duties;
 
-    @Before
-    public void setUp() {
+    /**
+     * Create an RA object to run tests on.
+     */
+    @Before public void setUp() {
         RABuilder builder = new RABuilder("Bob", 4, 2);
         duties = new ArrayList<Duty>();
         duties.add(new Duty(2015, 1, 1));
@@ -51,24 +55,30 @@ public class TestRA {
         test = builder.build();
     }
 
-    @Test
-    public void testBasics() {
+    /**
+     * Test basic functions like requiredDuties(), toString(), hashCode() and equals().
+     */
+    @Test public void testBasics() {
         assertEquals(2, test.requiredDuties());
         assertEquals("Bob", test.toString());
         assertEquals("Bob".hashCode(), test.hashCode());
         assertTrue(test.equals(test));
     }
 
-    @Test
-    public void testWeights() {
+    /**
+     * Test that itemWeight(...) works correctly.
+     */
+    @Test public void testWeights() {
         assertEquals(Integer.MAX_VALUE, test.itemWeight(duties.get(0)));
         for (int i = 1; i < duties.size(); i += 1) {
             assertEquals(i, test.itemWeight(duties.get(i)));
         }
     }
 
-    @Test
-    public void testEligible() {
+    /**
+     * Test that eligibleItem(...) works correctly.
+     */
+    @Test public void testEligible() {
         assertFalse(test.eligibleItem(duties.get(0)));
         for (int i = 1; i < duties.size(); i += 1) {
             assertTrue(test.eligibleItem(duties.get(i)));

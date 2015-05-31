@@ -24,6 +24,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    TestRA.class/*, TestDuty.class, TestGeneration.class, TestSchedule.class*/
+    TestRA.class, TestSchedule.class/*, TestDuty.class, TestGeneration.class*/
 })
 public class TestSuite { }

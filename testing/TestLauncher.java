@@ -1,38 +1,70 @@
 package testing;
 
-/**
- * Copyright (C) 2015 Matthew Mussomele
- *
- *  This file is part of ChoiceOptimizationAlgorithm
- *  
- *  ChoiceOptimizationAlgorithm is free software: you can redistribute it 
- *  and/or modify it under the terms of the GNU General Public License as
- *  published by the Free Software Foundation, either version 3 of the 
- *  License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *  
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
 public class TestLauncher {
 
+    /**
+     * Runs JUnit tests and prints verbose information about their results.
+     * PrintPosition function and general main structue taken from Josh Hug's 
+     * jh61b package. See https://github.com/Berkeley-CS61B/skeleton/tree/master/lib
+     * @param args command line args, this function takes none
+     */
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(TestSuite.class);
         for (Failure failure : result.getFailures()) {
             System.out.println(failure.toString());
         }
-        System.out.println(String.format("Ran %d tests.\n%d failed.\n%d succeeded.", 
-                                    result.getRunCount(), result.getFailureCount(), 
-                                    result.getRunCount() - result.getFailureCount()));
+        System.out.println(String.format("Time: %.3f", result.getRunTime() * .001));
+        if (result.getFailureCount() > 0) {
+            int i = 1;
+            System.out.println(String.format("%d tests failed:", result.getFailureCount()));
+            for (Failure fail : result.getFailures()) {
+                System.out.println(String.format("%d) %s", i++, fail.getTestHeader()));
+                Throwable e = fail.getException();
+                if (e instanceof AssertionError) {
+                    if (e.getMessage() == null) {
+                        System.out.println("    Assertion failed");
+                    } else {
+                        System.out.println(String.format("    %s", e.getMessage()));
+                    }
+                } else {
+                    if (e.getCause() != null) {
+                        e = e.getCause();
+                    }
+                    System.out.println(String.format("    %s", e));
+                }
+                for (StackTraceElement frame : e.getStackTrace()) {
+                    if (frame.getClassName().startsWith("org.junit.")) {
+                        continue;
+                    }
+                    printPosition(frame);
+                }
+                System.out.println();
+            }
+        }
+        System.out.print(String.format("Ran %d tests.", result.getRunCount()));
+        if (result.getFailureCount() == 0) {
+            System.out.println(" All passed.");
+        } else {
+            System.out.println(String.format(" %d failed.", result.getFailureCount()));
+        }
+    }
+
+    private static void printPosition (StackTraceElement frame) {
+        if (frame.isNativeMethod ()) {
+            System.out.println(String.format("    at %s.%s (native method)",
+                               frame.getClassName(),
+                               frame.getMethodName()));
+        } else {
+            System.out.println(String.format("    at %s.%s:%d (%s)",
+                               frame.getClassName(),
+                               frame.getMethodName(),
+                               frame.getLineNumber(),
+                               frame.getFileName()));
+        }
     }
 
 }

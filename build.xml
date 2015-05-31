@@ -46,6 +46,12 @@
     <target name="clean" description="Cleaning up project directory">
         <delete dir="${build}"/>
         <delete dir="${dist}"/>
+        <delete verbose="true">
+            <fileset dir="${src}">
+                <include name="**/*.class"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </delete>
     </target>
 
     <target name="runtests" depends="debug" description="Running JUnit tests">

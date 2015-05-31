@@ -53,6 +53,10 @@ public class TestLauncher {
         }
     }
 
+    /**
+     * Prints frame's position in the file.
+     * @param frame the fram to print
+     */
     private static void printPosition (StackTraceElement frame) {
         if (frame.isNativeMethod ()) {
             System.out.println(String.format("    at %s.%s (native method)",

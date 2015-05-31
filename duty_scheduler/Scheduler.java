@@ -210,7 +210,7 @@ public class Scheduler {
         createRAList(data.getJSONArray("residentAssistants"));
         try {
             ErrorChecker.evalPrefs(raList, dutyList);
-            //ErrorChecker.checkConsistency();
+            ErrorChecker.checkConsistency();
             if (!ALLOW_ILLEGALS) {
                 ErrorChecker.checkImpossible();
             } 

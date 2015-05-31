@@ -60,11 +60,13 @@ public class Scheduler {
     static final boolean ALLOW_ILLEGALS;
     static final boolean ALLOW_GREEDY;
     static final boolean CONSIDER_ADJACENTS;
+    static final boolean ANALYZE;
     static final String DATA_FILE;
     
     private static ArrayList<RA> raList;
     private static ArrayList<Duty> dutyList;
     private static HashMap<String, Duty> dutyLookup;
+    private static double[][] analytics;
 
     /**
      * The following initializer reads all necessary data from the config file. If the file
@@ -81,6 +83,7 @@ public class Scheduler {
         boolean defaultai = false;
         boolean defaultag = false;
         boolean defaultca = true;
+        boolean defaultv = false;
         String defaultdf = "data.json";
         BufferedReader reader = null;
         try {
@@ -141,6 +144,9 @@ public class Scheduler {
                     case "CONSIDER_ADJACENTS":
                         defaultca = Boolean.parseBoolean(fieldValue);
                         break;
+                    case "ANALYZE":
+                        defaultv = Boolean.parseBoolean(fieldValue);
+                        break;
                     case "DATA_FILE":
                         if (!fieldValue.endsWith(".json")) {
                             throw new IllegalArgumentException(String.format("Data file must " 
@@ -170,6 +176,7 @@ public class Scheduler {
             ALLOW_ILLEGALS = defaultai;
             ALLOW_GREEDY = defaultag;
             CONSIDER_ADJACENTS = defaultca;
+            ANALYZE = defaultv;
             DATA_FILE = defaultdf;
             dutyList = new ArrayList<Duty>();
             raList = new ArrayList<RA>();
@@ -203,7 +210,7 @@ public class Scheduler {
         createRAList(data.getJSONArray("residentAssistants"));
         try {
             ErrorChecker.evalPrefs(raList, dutyList);
-            ErrorChecker.checkConsistency();
+            //ErrorChecker.checkConsistency();
             if (!ALLOW_ILLEGALS) {
                 ErrorChecker.checkImpossible();
             } 
@@ -296,10 +303,16 @@ public class Scheduler {
         Schedule best = null;
         Schedule localBest = null;
         Generation thisGen = null;
+        if (ANALYZE) {
+            analytics = new double[NUM_RUNS][];
+        }
         for (int i = 0; i < NUM_RUNS; i += 1) {
             thisGen = new Generation();
             thisGen.seed(raList, dutyList);
             localBest = thisGen.evolve();
+            if (ANALYZE) {
+                analytics[i] = thisGen.getHistory();
+            }
             if (best == null || localBest.getCost() < best.getCost()) {
                 best = localBest;
             }
@@ -333,16 +346,37 @@ public class Scheduler {
     private static void printResults(Schedule best, String runTimeReport) {
         String resultsFile = "schedule_" 
                         + (new SimpleDateFormat("MM-dd-yyyy-hh:mm")).format(new Date()) + ".sched";
-        PrintWriter out = null;
+        PrintWriter dataOut = null;
         try {
-            out = new PrintWriter(resultsFile);
-            out.println(runTimeReport);
-            out.println("Duty Assignments:\n\n");
-            out.println(best.toString());
+            dataOut = new PrintWriter(resultsFile);
+            dataOut.println(runTimeReport);
+            dataOut.println("Duty Assignments:\n\n");
+            dataOut.println(best.toString());
         } catch (IOException e) {
             ErrorChecker.printExceptionToLog(e);
         } finally {
-            out.close();
+            dataOut.close();
+        }
+    }
+
+    /**
+     * Prints analytics data to a space separated file called analytics.txt
+     */
+    private static void printAnalytics() {
+        String analyticsFile = "analytics.txt";
+        PrintWriter analysisOut = null;
+        try {
+            analysisOut = new PrintWriter(analyticsFile);
+            for (double[] generationData : analytics) {
+                for (double dataPoint : generationData) {
+                    analysisOut.print(String.format("%.3f ", dataPoint));
+                }
+                analysisOut.println();
+            }
+        } catch (IOException e) {
+            ErrorChecker.printExceptionToLog(e);
+        } finally {
+            analysisOut.close();
         }
     }
 
@@ -357,6 +391,9 @@ public class Scheduler {
             parseData();
             Schedule best = run();
             printResults(best, runTime(System.nanoTime() - timeElapsed));
+            if (ANALYZE) {
+                printAnalytics();
+            }
         } catch (Exception e) {
             ErrorChecker.printExceptionToLog(e);
         }

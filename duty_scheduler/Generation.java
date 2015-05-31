@@ -24,6 +24,7 @@ import java.util.TreeSet;
 import java.util.Collections;
 import java.util.Set;
 import java.util.Collection;
+import java.util.Arrays;
 
 import choice_optimizer.Population;
 
@@ -34,14 +35,16 @@ import choice_optimizer.Population;
  */
 public class Generation implements Population<RA, Duty> {
 
-    TreeSet<Schedule> schedules;
-    ArrayList<RA> rList;
-    ArrayList<Duty> dList;
+    private TreeSet<Schedule> schedules;
+    private ArrayList<RA> rList;
+    private ArrayList<Duty> dList;
+    private double[] ancestry;
 
     {
         schedules = new TreeSet<Schedule>();
         rList = new ArrayList<RA>();
         dList = new ArrayList<Duty>();
+        ancestry = new double[Scheduler.EVOLVE_ITERS];
     }
 
     /**
@@ -132,6 +135,10 @@ public class Generation implements Population<RA, Duty> {
         return null;
     }
 
+    public double[] getHistory() {
+        return Arrays.copyOf(ancestry, ancestry.length);
+    }
+
     /**
      * Gets the first Duty in the ArrayList that can be assigned to the given RA
      * 
@@ -158,6 +165,7 @@ public class Generation implements Population<RA, Duty> {
             throw new IllegalArgumentException("Must evolve the schedule generation at least once");
         } else {
             for (int i = 0; i < Scheduler.EVOLVE_ITERS; i += 1) {
+                ancestry[i] = schedules.first().getCost();
                 this.step();
             }
         }

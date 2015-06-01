@@ -53,9 +53,9 @@ public class TestSchedule {
             RABuilder builder = new RABuilder(String.format("RA%d", i), 6, 3);
             for (int j = 0; j < 6; j += 1) {
                 if (i == 0) {
-                    builder.putPreference(dutyList.get(i), i);
+                    builder.putPreference(dutyList.get(j), j);
                 } else {
-                    builder.putPreference(dutyList.get(i), 5 - i);
+                    builder.putPreference(dutyList.get(j), 5 - j);
                 }
             }
             raList.add(builder.build());

@@ -38,15 +38,20 @@ import org.junit.Test;
  */
 public class TestSchedule {
 
+    private static final int THIS_YEAR = 2015;
+
     private ScheduleBuilder testBuilder;
     private Schedule test;
     private ArrayList<RA> raList;
     private ArrayList<Duty> dutyList;
 
+    /**
+     * Fill the four instance variables with some simple test instances before every test.
+     */
     @Before public void setUp() {
         dutyList = new ArrayList<Duty>();
         for (int i = 0; i < 6; i += 1) {
-            dutyList.add(new Duty(2015, 1, i + 1));
+            dutyList.add(new Duty(THIS_YEAR, 1, i + 1));
         }
         raList = new ArrayList<RA>();
         for (int i = 0; i < 2; i += 1) {
@@ -71,6 +76,9 @@ public class TestSchedule {
         test = builder.build();
     }
 
+    /**
+     * Tests that the ScheduleBuilder works and properly returns a Schedule instance
+     */
     @Test public void testBuild() {
         for (int i = 0; i < raList.size(); i += 1) {
             assertTrue(testBuilder.doneAssigning(raList.get(i)));
@@ -78,6 +86,11 @@ public class TestSchedule {
         assertNotNull(test);
     }
 
+    /**
+     * Tests that the built Schedule's basic functions perform to the requirements of the package.
+     * These tests are to ensure that these methods are not changed by a programmer in such a way 
+     * that would cause Schedules to be lost in a Hash or Tree based structure.
+     */
     @Test public void testBasics() {
         for (int i = 0; i < raList.size(); i += 1) {
             for (Duty duty : test.getAssignments(raList.get(i))) {

@@ -25,7 +25,6 @@ import java.util.Random;
 import java.util.Set;
 
 import choice_optimizer.AbstractMapping;
-import choice_optimizer.Mapping;
 
 /**
  * A class for representing a schedule of RA Duties.

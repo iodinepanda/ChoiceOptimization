@@ -19,6 +19,11 @@ package testing;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * JUnit Testing Class for the duty_scheduler.Duty class.
+ *
+ * @author Matthew Mussomele
+ */
 public class TestDuty {
 
 }

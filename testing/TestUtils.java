@@ -38,6 +38,7 @@ public class TestUtils {
     /**
      * Generates all possible schedules using the two list of RAs and Duty's.
      * Uses the Counting QuickPerm Algorithm - http://www.quickperm.org/quickperm.html
+     * 
      * @param  raList   The RAs that need duties assigned
      * @param  dutyList The Duty's to assign
      * @return          The cost of the best possible schedule with these preferences.
@@ -63,12 +64,29 @@ public class TestUtils {
         return bestCost;
     }
 
+    /**
+     * Swaps the Duty instances at indices i and j
+     * 
+     * @param duties The list to swap in
+     * @param i      The index of the first Duty
+     * @param j      The index of the second Duty
+     */
     private static void swap(ArrayList<Duty> duties, int i, int j) {
         Duty temp = duties.get(i);
         duties.set(i, duties.get(j));
         duties.set(j, temp);
     }
 
+    /**
+     * Constructs and returns a schedule corresponding to the given ArrayList of duties.
+     * The ArrayList contains a permutation of the master Duty list, and they are assigned
+     * in order to a list of RA instances that never changes order. By using this method on
+     * all permutations of the master Duty list, we generate all possible Schedule instances.
+     *     
+     * @param  raList   The list of RA instances
+     * @param  dutyList The permuted list of Duty instances
+     * @return          A Schedule build using the two lists
+     */
     private static Schedule buildSchedule(ArrayList<RA> raList, ArrayList<Duty> dutyList) {
         ScheduleBuilder builder = new ScheduleBuilder(raList.size(), dutyList.size());
         for (RA ra : raList) {

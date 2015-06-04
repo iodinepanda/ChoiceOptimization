@@ -135,6 +135,11 @@ public class Generation implements Population<RA, Duty> {
         return null;
     }
 
+    /**
+     * Returns the cost history of this Generation's best schedule as a double array
+     * 
+     * @return The history of costs of this Generation's best schedule
+     */
     public double[] getHistory() {
         return Arrays.copyOf(ancestry, ancestry.length);
     }

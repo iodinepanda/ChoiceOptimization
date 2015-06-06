@@ -51,13 +51,13 @@ public class TestDuty {
      */
     @Test public void testBasics() {
         assertEquals(0, feb_first.compareTo(new Duty(THIS_YEAR, 1, 1)));
-        assertEquals(0, feb_fourth.compareTo(feb_fourth);
+        assertEquals(0, feb_fourth.compareTo(feb_fourth));
 
-        assertEquals(1, feb_second.compareTo(feb_first))
-        assertEquals(1, feb_fourth.compareTo(feb_third))
+        assertEquals(1, feb_second.compareTo(feb_first));
+        assertEquals(1, feb_fourth.compareTo(feb_third));
 
-        assertEquals(-1, feb_first.compareTo(feb_second))
-        assertEquals(-1, feb_third.compareTo(feb_fourth))
+        assertEquals(-1, feb_first.compareTo(feb_second));
+        assertEquals(-1, feb_third.compareTo(feb_fourth));
 
     }
 
@@ -66,7 +66,7 @@ public class TestDuty {
      * Test that illegal duties are properly handled.
      */
     @Test public void testEligible() {
-        Duty illegal_duty = Duty(THIS_YEAR, 50, 1)
+        Duty illegal_duty = Duty(THIS_YEAR, 50, 1);
     }
 
 }

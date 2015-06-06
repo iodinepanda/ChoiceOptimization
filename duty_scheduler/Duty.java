@@ -54,7 +54,8 @@ public class Duty extends AbstractItem {
             ErrorChecker.printExceptionToLog(e);
         
         } 
-        date.set(year, month, day); //Note: the constructor trusts that the day is valid
+        date.set(year, month, day, 0, 0, 0); //Note: the constructor trusts that the day is valid
+        date.set(Calendar.MILLISECOND, 0);
         String formatString = "%d-";
         if (month < 10) {
             formatString += "0";

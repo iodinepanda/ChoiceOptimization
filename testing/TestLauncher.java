@@ -64,9 +64,9 @@ public class TestLauncher {
     private static final String             NO_TESTS = "\tTest file had no runnable methods.";
     private static final String     FINISHED_TESTING = "All tests completed. See report above for details.";
     private static final String        JUNIT_PACKAGE = "org.junit.";
+    private static final String          ANT_PACKAGE = "org.apache.tools.ant.";
 
-    private static final File         TESTING_FOLDER = new File(TestLauncher.class.getProtectionDomain().getCodeSource().getLocation().getPath(),
-                                                                                                                            TEST_PACKAGE);
+    private static final File         TESTING_FOLDER = new File(TestLauncher.class.getProtectionDomain().getCodeSource().getLocation().getPath(), TEST_PACKAGE);
 
     private static final FilenameFilter FILE_FILTER = new FilenameFilter() {
         /**
@@ -74,30 +74,30 @@ public class TestLauncher {
          * 
          * @param  dir  The directory in which the file is contained
          * @param  name The name of the file
-         * @return      True if the file should NOT be filtered
+         * @return      True if the file should NOT be filtered out
          */
         public boolean accept(File dir, String name) {
             return notExcluded(name) && name.matches(TEST_MATCHER);
+        }
+
+        /**
+         * Checks if the given file has been excluded from the files matching TEST_MATCHER
+         * 
+         * @param  fileName The filename to check
+         * @return          True if the file has NOT been excluded
+         */
+        private boolean notExcluded(String fileName) {
+            for (String exclude : EXCLUDES) {
+                if (fileName.matches(exclude)) {
+                    return false;
+                }
+            }
+            return true;
         }
     };
 
     private static int testCount = 0;
     private static int failCount = 0;
-
-    /**
-     * Checks if the given file has been excluded from the files matching TEST_MATCHER
-     * 
-     * @param  fileName The filename to check
-     * @return          True if the file has NOT been excluded
-     */
-    private static boolean notExcluded(String fileName) {
-        for (String exclude : EXCLUDES) {
-            if (fileName.matches(exclude)) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     /**
      * Constructs the string you would pass to the 'java' command if you were running the given class from the command line
@@ -193,10 +193,10 @@ public class TestLauncher {
                 }
             }
             System.out.println(String.format(FAILED_FOR_CLASS, 
-                                                result.getFailureCount(),
-                                                result.getRunCount(),
-                                                testClassName
-                                                ));
+                                             result.getFailureCount(),
+                                             result.getRunCount(),
+                                             testClassName
+                                             ));
         } else {
             System.out.println(String.format(PASSED_FOR_CLASS, testClassName));
         }
@@ -230,7 +230,7 @@ public class TestLauncher {
      */
     private static void printStackTrace(Throwable e) {
         for (StackTraceElement frame : e.getStackTrace()) {
-            if (frame.getClassName().startsWith(JUNIT_PACKAGE)) {
+            if (frame.getClassName().startsWith(JUNIT_PACKAGE) || frame.getClassName().startsWith(ANT_PACKAGE)) {
                 continue;
             } 
             printPosition(frame);
@@ -239,7 +239,7 @@ public class TestLauncher {
 
     /**
      * Prints frame's position in the file.
-     * @param frame the fram to print
+     * @param frame the frame to print
      */
     private static void printPosition(StackTraceElement frame) {
         if (frame.isNativeMethod()) {
@@ -257,7 +257,7 @@ public class TestLauncher {
 
     /**
      * Runs JUnit tests and prints verbose information about their results.
-     * PrintPosition function and knownledge of JUnit API taken from Josh Hug's 
+     * PrintPosition function and knowledge of JUnit API taken from Josh Hug's 
      * jh61b package. See https://github.com/Berkeley-CS61B/skeleton/tree/master/lib
      * @param args command line args, this function takes none
      */

@@ -19,10 +19,17 @@ package testing;
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import duty_scheduler.Duty;
+
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
 /**
  * JUnit Testing Class for the duty_scheduler.Duty class.
  *
- * @author Matthew Mussomele
+ * @author Amit Akula, Matthew Mussomele
+ * 
  */
 public class TestDuty {
 
@@ -65,8 +72,9 @@ public class TestDuty {
     /**
      * Test that illegal duties are properly handled.
      */
-    @Test public void testEligible() {
-        Duty illegal_duty = Duty(THIS_YEAR, 50, 1);
+    @Test(expected=Exception.class)
+    public void testEligible() {
+        Duty illegal_duty = new Duty(THIS_YEAR, 50, 1);
     }
 
 }

@@ -29,10 +29,10 @@ public class TestDuty {
 
     private static final int THIS_YEAR = 2015;
 
-	public Duty feb_first;
+	private Duty feb_first;
 	public Duty feb_second;
-	public Duty feb_third;
-	public Duty feb_fourth;
+	private Duty feb_third;
+	private Duty feb_fourth;
 
 
     /**

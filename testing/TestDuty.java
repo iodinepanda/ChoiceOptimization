@@ -26,4 +26,47 @@ package testing;
  */
 public class TestDuty {
 
+
+    private static final int THIS_YEAR = 2015;
+
+	public Duty feb_first;
+	public Duty feb_second;
+	public Duty feb_third;
+	public Duty feb_fourth;
+
+
+    /**
+     * Create an RA object to run tests on.
+     */
+    @Before public void setUp() {
+        feb_first = new Duty(THIS_YEAR, 1, 1);
+        feb_second = new Duty(THIS_YEAR, 1, 2);
+        feb_third = new Duty(THIS_YEAR, 1, 3);
+        feb_fourth = new Duty(THIS_YEAR, 1, 4);
+    }	
+
+
+    /**
+     * Test basic functions like getTime(), compareTo()
+     */
+    @Test public void testBasics() {
+        assertEquals(0, feb_first.compareTo(new Duty(THIS_YEAR, 1, 1)));
+        assertEquals(0, feb_fourth.compareTo(feb_fourth);
+
+        assertEquals(1, feb_second.compareTo(feb_first))
+        assertEquals(1, feb_fourth.compareTo(feb_third))
+
+        assertEquals(-1, feb_first.compareTo(feb_second))
+        assertEquals(-1, feb_third.compareTo(feb_fourth))
+
+    }
+
+
+    /**
+     * Test that illegal duties are properly handled.
+     */
+    @Test public void testEligible() {
+        Duty illegal_duty = Duty(THIS_YEAR, 50, 1)
+    }
+
 }
